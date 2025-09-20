@@ -1,0 +1,230 @@
+Make sure that all required ports are open. The ports required for a Kubernetes deployment are:
+----------------------------------------------------------------------------------------------------
+2379/tcp: Kubernetes etcd server client API (on master nodes in multi-master deployments)
+2380/tcp: Kubernetes etcd server client API (on master nodes in multi-master deployments)
+6443/tcp: Kubernetes API server (master nodes)
+8090/tcp: Platform Agent (master and worker nodes)
+8091/tcp: Platform API Server (operator node)
+8472/udp: Flannel overlay network, VxLAN backend (master and worker nodes)   [CNI]
+10250/tcp: Kubernetes kubelet API server (master and worker nodes)
+10251/tcp: Kubernetes kube-scheduler (on master nodes in multi-master deployments)
+10252/tcp: Kubernetes kube-controller-manager (on master nodes in multi-master deployments)
+10255/tcp: Kubernetes kubelet API server for read-only access with no authentication (master and worker nodes)
+----------------------------------------------------------------------------------------------------------
+
+Swap memory must be disabled 
+	
+  #swapon -s 
+		
+  #swapoff -a
+		
+SELinux  should disabled or permissive. 
+
+			vim /etc/sysconfig/selinux
+
+			SELINUX=disabled
+			
+Note:  IN Linux there is only one service which is SELinux require restart 
+
+
+---------------------------------------------------------------
+Step-1  Preexecution Tasks :
+
+	
+	1.1  Confirm the SG (Firewall) and allow ports for all nodes.
+				
+	
+	1.2 set hostname and note down IP address  (private IP only)				[ All VM ]
+
+			hostnamectl set-hostname master.tg.com
+			hostnamectl set-hostname wn1.tg.com
+			hostnamectl set-hostname wn2.tg.com
+
+vi /etc/hosts 
+	
+			
+			
+172.31.86.126	master.tg.com
+172.31.82.103	wn1.tg.com
+172.31.91.176	wn2.tg.com
+			
+
+	1.3  Public and private generate for communication between master and wn1   (ONLY ON MASTER NODE)
+
+			Goto master node and generate public and private key :
+
+				ssh-keygen  -t  rsa
+
+		now copy your public key and share with all worker node.
+
+		 cat  /root/.ssh/id_rsa.pub
+
+
+	1.4  Now login to wn1  machine and open following file with user root
+	
+	
+		vi  /root/.ssh/authorized_keys
+
+			
+			
+			Now past here your master node public key 
+			
+			
+			save and exit 
+
+
+	1.5   Goto master node and try to login from master to wn1 without using password  
+	
+	
+					ssh  root@wn1.tg.com 
+
+-----------------------------------------------------------------------------------------------
+
+Step-2  Kernel argument add / update 		( All  VM ) 
+
+	vi   /etc/sysctl.d/k8s.conf		
+		
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+
+
+save and exit 
+
+	2.1  sysctl --system
+
+---------------------------------------------------------------------------------
+
+Step-3  Docker installation and start the service before k8s installation [ All  VM ]
+
+   yum install docker -y 
+   
+   systemctl start docker && systemctl enable docker
+
+---------------------------------------------------------------------------------
+
+Step-4 Create apt-get (Ubuntu ) |  Centos /RHEL (DNF / yum) repo for download k8s package 	[ All  VM ]
+
+cd  /etc/yum.repos.d/
+
+vim k8s.repo
+
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.33/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.33/rpm/repodata/repomd.xml.key
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+
+
+4.1 
+		yum clean all
+		yum makecache
+---------------------------------------------------------------------------------	
+Step-5  Pull / download packages from k8s repo ( ALL VM )
+
+
+		yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+---------------------------------------------------------------------------------
+
+Step-6 Start kubelet (Agent)  service       		[ALL VM]
+
+	
+	systemctl start kubelet ; systemctl enable kubelet ; systemctl status kubelet
+
+---------------------------------------------------------------------------------
+
+Step-7  V.V.VImportant step  		[MASTER  NODE]
+
+		kubeadm init 
+		
+		
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+Step-8  Copy and safely save in your system for Woker node   ( No need to run anywhere right now )
+
+	kubeadm join 172.31.86.126:6443 --token 8usxul.3yxo3bpkgenwrjb1 \
+        --discovery-token-ca-cert-hash sha256:2c6480828fed528c7f19a902bfd8dbace5fae55b30b57f02139921198891d711
+
+
+Step-9  Network CNI setup for k8s cluster 		(  MASTER NODE )
+
+			calico	  Layer 3 (routing)
+			flunel    (Overlay)
+			weavenet   (Overlay) (We will choose this )
+			
+			
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+
+
+Step-10  
+			Follow Step-8  ( join worker node with Master node)  			[ ONLy worker Node ]
+			
+			
+Step-11
+
+			goto master node and execute following commands
+			
+					kubectl  get nodes 
+					
+					kubectl  get no 
+					
+			if someone forget how to print token for joining worker node
+			
+				 kubeadm token create --print-join-command
+
+Step-12  Print all namespaces in k8s 
+
+		kubectl get namespaces
+		
+		kubectl get ns 
+		
+		
+	List all pods under namespaces
+	
+	
+		kubectl get pod  -n default
+	
+		kubectl  get pod -n  kube-node-lease
+
+		kubectl get po  -n kube-public
+
+
+		 kubectl get po  -n kube-system
+
+
+		kubectl get po  -n kube-system  -o wide
+
+
+
+READY = [Number of Ready Containers] / [Total Containers in the Pod]
+
+
+		kubectl create ns  mytg
+		
+		 kubectl  get po  -n mytg
+
+
+
+-------------------------------xxxxxxxxxxxxxxxxxxx--------------------------------
+
+
+	Cluster  --->   Nodes  --->  Namespace --->  POD --->  Continer --> Microservices 
+	
+-----------------------------------------------------------------------------------
+
+
+	kubectl api-resources     |  less
+	
+--------------------------------------------------------------
+
+	 kubectl get all  --all-namespaces
+
+	
+	kubectl  get all -n  mytg 
+
+----------------------------------------------------------------
