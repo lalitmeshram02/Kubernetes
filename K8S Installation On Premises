@@ -1,3 +1,11 @@
+Operting System: Ubuntu Server 22.04
+CPU: 2 Core
+Memory: 4 GB
+Storage : 30 G
+Virtualization : VM Ware Virtualization 
+
+
+
 NAT IP: 192.168.136.174
 HOST ONLY: 
            Subnet: 10.0.0.0/8
