@@ -140,6 +140,66 @@ STEP 3:
 #kubectl apply -f calico.yaml
 ====================================================================================================================================================================
 
+STEP 4:
+Create a Token On master:
+
+#kubeadm token create --print-join-command
+o/p:
+    kubeadm join 10.0.0.100:6443 --token p4cg70.3d7irklgu1lsa34t --discovery-token-ca-cert-hash sha256:12392aae6319c7b579805230c428aa9139485ab1f29f56024d9e88ee613e1cf5
+
+
+===========================================================================================================================================================================
+
+STEP 5:
+
+Run Below Command on Worker node to join in cluster
+
+#kubeadm join 10.0.0.100:6443 --token p4cg70.3d7irklgu1lsa34t --discovery-token-ca-cert-hash sha256:12392aae6319c7b579805230c428aa9139485ab1f29f56024d9e88ee613e1cf5
+
+=====================================================================================================================================================================
+STEP 6:
+Check Worker is sucessfully added or not OR Check how much number of Nodes present in Cluster  [ RUN Only On Master ]
+
+#kubectl get nodes
+NAME        STATUS   ROLES           AGE    VERSION
+k8smaster   Ready    control-plane   133m   v1.29.15
+worker      Ready    <none>          83m    v1.29.15
+
+
+Bash Complition:
+#source <(kubectl completion bash)
+#echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+
+#kubectl -n kube-system get pods -o wide 
+NAME                                       READY   STATUS    RESTARTS   AGE    IP                NODE        NOMINATED NODE   READINESS GATES
+calico-kube-controllers-658d97c59c-fk6r6   1/1     Running   0          131m   172.16.16.129     k8smaster   <none>           <none>
+calico-node-75xk7                          1/1     Running   0          86m    192.168.136.175   worker      <none>           <none>
+calico-node-b2tp4                          1/1     Running   0          131m   192.168.136.174   k8smaster   <none>           <none>
+coredns-76f75df574-lgltj                   1/1     Running   0          136m   172.16.16.131     k8smaster   <none>           <none>
+coredns-76f75df574-t8hcf                   1/1     Running   0          136m   172.16.16.130     k8smaster   <none>           <none>
+etcd-k8smaster                             1/1     Running   0          136m   192.168.136.174   k8smaster   <none>           <none>
+kube-apiserver-k8smaster                   1/1     Running   0          136m   192.168.136.174   k8smaster   <none>           <none>
+kube-controller-manager-k8smaster          1/1     Running   0          136m   192.168.136.174   k8smaster   <none>           <none>
+kube-proxy-gbrdl                           1/1     Running   0          136m   192.168.136.174   k8smaster   <none>           <none>
+kube-proxy-jqsc4                           1/1     Running   0          86m    192.168.136.175   worker      <none>           <none>
+kube-scheduler-k8smaster                   1/1     Running   0          136m   192.168.136.174   k8smaster   <none>           <none>
+
+
+
+#kubectl -n kube-system get nodes -o wide
+NAME        STATUS   ROLES           AGE    VERSION    INTERNAL-IP       EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION       CONTAINER-RUNTIME
+k8smaster   Ready    control-plane   137m   v1.29.15   192.168.136.174   <none>        Ubuntu 22.04.5 LTS   5.15.0-156-generic   cri-o://1.33.0
+worker      Ready    <none>          88m    v1.29.15   192.168.136.175   <none>        Ubuntu 22.04.5 LTS   5.15.0-156-generic   cri-o://1.33.0
+
+
+
+==================================================================================================================================================================
+
+
+
+
+
 
 
 
