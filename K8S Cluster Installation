@@ -10,7 +10,10 @@ Make sure that all required ports are open. The ports required for a Kubernetes 
 10251/tcp: Kubernetes kube-scheduler (on master nodes in multi-master deployments)
 10252/tcp: Kubernetes kube-controller-manager (on master nodes in multi-master deployments)
 10255/tcp: Kubernetes kubelet API server for read-only access with no authentication (master and worker nodes)
-----------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+Cloud : AWS
+Machine: Amazon Linux
+
 Swap memory must be disabled 
 	
 #swapon -s 
@@ -29,10 +32,8 @@ Note:  IN Linux there is only one service which is SELinux require restart
 
 Step-1  Preexecution Tasks :
 
-	
 	1.1  Confirm the Security Group (Firewall) and allow ports for all nodes.
 				
-	
 	1.2 set hostname and note down IP address  (private IP only)				[ All VM ]
 
 			hostnamectl set-hostname master.tg.com
