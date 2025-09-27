@@ -43,6 +43,84 @@ Kube Proxy → Handles network routing.
 
 
 
+POD:
+- A Pod is the smallest and simplest deployable unit in Kubernetes.
+- Think of a Pod as a wrapper around containers that makes them work as a single unit in Kubernetes.
+
+Smallest unit – Kubernetes doesn’t run containers directly; it runs Pods.
+One or multiple containers – usually one container per pod, but sometimes multiple (sidecar pattern).
+Shared networking – all containers in a Pod share the same IP.
+Shared storage – they can mount the same persistent volumes.
+Ephemeral – Pods are temporary. If a Pod dies, Kubernetes replaces it with a new one (not the same Pod).
+
+eg: #vim firstpod.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+
+#kubectl apply -f firstpod.yaml
+
+#kubectl get pods  ======> 
+
+#kubectl get pods -o wide  =====> Detail description of POD
+
+#kubectl describe pod my-pod
+
+#kubectl delete pod my-pod     OR kubectl delete -f firstpod.yml   =======> Delete a pod
+
+
+
+
+============================================================================================================================================================
+Namespace:
+
+- A Namespace is a way to logically separate and organize resources in a Kubernetes cluster.
+
+Method 1: Create Namespace with Command
+#kubectl create namespace dev =====> Craete a namespace
+
+#kubectl get namespaces
+
+
+Method 2:Create Namespace with YAML
+#vim namespace.yml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+
+#kubectl apply -f namespace.yml
+
+
+Method 3: Use Namespace for Resources
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: dev
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+
+Or using command line:
+
+#kubectl run nginx-pod --image=nginx -n dev
+
+
+
+
+
 
 
 
