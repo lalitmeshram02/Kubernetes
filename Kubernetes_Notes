@@ -1,0 +1,67 @@
+Kubernetes(K8S)
+
+Kubernetes = container management system that ensures your apps run reliably, scale automatically, and recover from failures.
+
+- Kubernetes is an open-source container orchestration platform
+- It was originally developed by Google, now maintained by the Cloud Native Computing Foundation (CNCF).
+- It automates deployment, scaling, and management of containerized applications.
+
+Without Kubernetes:
+
+- You’d have to manually start/stop containers.
+- Handle crashes, scaling, and networking yourself.
+
+With Kubernetes:
+
+- Self-healing: Restarts failed containers automatically.
+- Load balancing: Distributes traffic between pods.
+- Scaling: Adds/removes containers when needed.
+- Rolling updates: Deploy new app versions with zero downtime.
+- Resource management: Efficiently uses CPU/RAM.
+
+
+
+Cluster → A group of machines (nodes).
+Control Plane (Master Node) → manages the cluster.
+Worker Nodes → run applications.
+Pod → Smallest deployable unit in Kubernetes (1 or more containers).
+Deployment → Manages pods, scaling, and rolling updates.
+Service → Exposes pods inside or outside the cluster (stable networking).
+ConfigMap & Secret → Store app configuration and sensitive data.
+Namespace → Virtual cluster inside a cluster, helps organize resources.
+
+
+
+High-Level Architecture
+
+API Server → Entry point (kubectl talks to this).
+Scheduler → Decides which node runs a pod.
+Controller Manager → Ensures cluster desired state = actual state.
+etcd → Key-value store (brain of the cluster).
+Kubelet → Runs on each worker node, manages pods.
+Kube Proxy → Handles network routing.
+
+
+
+
+
+
+
+
+#kubectl cluster-info  =========> Shows information about the cluster (API server, DNS, etc.).
+
+#kubectl get nodes =============> Lists all nodes in the cluster and their status.
+
+#kubectl get namespaces  =======> 
+
+
+
+#kubectl get pods   ======>  Lists pods in the current namespace.
+
+#kubectl get pods -o wide  ====> Shows pods with more details (node, IP, etc.).
+
+#kubectl describe pod <pod-name>  ====> Shows detailed info about a specific pod.
+
+#kubectl describe node <node-name>  ====> Shows detailed info about a specific node.
+
+#kubectl logs <pod-name>
