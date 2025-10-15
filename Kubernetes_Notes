@@ -82,13 +82,60 @@ spec:
 ============================================================================================================================================================
 Namespace:
 
+ A namespace is a logical isolation or grouping mechanism within a Kubernetes cluster.
+ It allows you to divide cluster resources among multiple users, teams, or projects.
+ Think of it as a virtual cluster inside a physical cluster.
+
 - A Namespace is a way to logically separate and organize resources in a Kubernetes cluster.
+
+- Resource isolation 
+
+Resolved :
+   - Avoide Name Clash
+   - controll communication --Network policies like firewall
+   - Apply Quota
+   - Limit Range 
+
+Default Namespaces in Kubernetes
+
+****** When you create a new cluster, Kubernetes comes with four default namespaces:
+
+Namespace	Purpose
+default ----	Used for objects with no namespace specified
+kube-system	---- Contains system components (e.g., kube-dns, kube-proxy, scheduler)
+kube-public	---- Publicly readable data (rarely used)
+kube-node-lease	------For node heartbeats (used by kubelet for performance)
+
 
 Method 1: Create Namespace with Command
 #kubectl create namespace dev =====> Craete a namespace
 
-#kubectl get namespaces
+#kubectl get namespaces =====> List of Namespaces
+Output:
+NAME              STATUS   AGE
+default           Active   2d21h
+kube-node-lease   Active   2d21h
+kube-public       Active   2d21h
+kube-system       Active   2d21h
 
+
+#kubectl get ns 
+Output:
+NAME              STATUS   AGE
+default           Active   2d21h
+kube-node-lease   Active   2d21h
+kube-public       Active   2d21h
+kube-system       Active   2d21h
+
+#kubectl create namespace dev ========> Create a namespace
+
+#kubectl delete namespace dev =========> Delete Namespace
+
+#kubectl get pods -n dev ===============> Get resources inside a namespace
+
+#kubectl config set-context --current --namespace=dev ====> Set a default namespace for kubectl
+
+======================================================================================================================================================================
 
 Method 2:Create Namespace with YAML
 #vim namespace.yml
@@ -103,36 +150,38 @@ metadata:
 
 Method 3: Use Namespace for Resources
 
+vim namespace.yaml
+
 apiVersion: v1
 kind: Pod
 metadata:
   name: nginx-pod
-  namespace: dev
+  namespace: dev    # Name of namespace dev
 spec:
   containers:
   - name: nginx
     image: nginx
 
-Or using command line:
 
+#kubectl apply -f namespace.yaml
+
+
+
+Or using command line:
 #kubectl run nginx-pod --image=nginx -n dev
 
 
 
 
+======================================================================================================================================================================
 
 
 
 
 
-
-#kubectl cluster-info  =========> Shows information about the cluster (API server, DNS, etc.).
+#kubectl cluster-info  OR kubectl cluster-info dump  =========> Shows information about the cluster (API server, DNS, etc.).
 
 #kubectl get nodes =============> Lists all nodes in the cluster and their status.
-
-#kubectl get namespaces  =======> 
-
-
 
 #kubectl get pods   ======>  Lists pods in the current namespace.
 
