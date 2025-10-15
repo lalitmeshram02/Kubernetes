@@ -127,6 +127,10 @@ kube-node-lease   Active   2d21h
 kube-public       Active   2d21h
 kube-system       Active   2d21h
 
+#kubectl describe ns dev 
+
+
+
 #kubectl create namespace dev ========> Create a namespace
 
 #kubectl delete namespace dev =========> Delete Namespace
@@ -169,6 +173,13 @@ spec:
 
 Or using command line:
 #kubectl run nginx-pod --image=nginx -n dev
+
+
+Namespace Quota:
+
+#kubectl create quota dev-quota --hard-cpu=1, memory=2G, pod=4 -n dev  
+
+#kubectl describe ns dev
 
 
 
